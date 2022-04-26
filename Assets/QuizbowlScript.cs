@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -13,6 +13,7 @@ public class QuizbowlScript : MonoBehaviour
     int currentClue = 0;
     int ans = 0;
     int toss = 0;
+    int debug = 0;
     string selectedTossup = "";
     string answer = "";
     bool _isSolved = false;
@@ -241,6 +242,10 @@ public class QuizbowlScript : MonoBehaviour
 
     void buttonPress()
     {
+        debug += 1;
+
+        Debug.LogFormat("Quizbowl #{0} Next Press: {1}. Hint: {2}", moduleId, debug, clues[currentClue]);
+
         if (nextTossup)
         {
             Submit = false;
@@ -337,6 +342,7 @@ public class QuizbowlScript : MonoBehaviour
     {
         connecting = true;
         toss = Rnd.Range(0, 200) * 2;
+        //toss = 156 * 2;//
         ans = toss + 1;
         selectedTossup = TossupList.phrases[toss];
         answer = TossupList.phrases[ans];
