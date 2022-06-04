@@ -13,7 +13,6 @@ public class QuizbowlScript : MonoBehaviour
     int currentClue = 0;
     int ans = 0;
     int toss = 0;
-    int debug = 0;
     string selectedTossup = "";
     string answer = "";
     bool _isSolved = false;
@@ -34,6 +33,7 @@ public class QuizbowlScript : MonoBehaviour
     bool connecting = false;
     bool focused = false;
     bool Submit = false;
+    bool autosolving = false;
 
     string TheLetters = "<eQWERTYUIOPASDFGHJKLZXCVBNM1234567890-'. ";
 
@@ -165,7 +165,7 @@ public class QuizbowlScript : MonoBehaviour
 
     void handleBack()
     {
-        if (focused)
+        if (focused || autosolving)
         {
             if (yourAnswer.Length != 0)
             {
@@ -176,7 +176,7 @@ public class QuizbowlScript : MonoBehaviour
 
     void handleEnter()
     {
-        if (focused)
+        if (focused || autosolving)
         {
             bool right = false;
             Debug.LogFormat("[Quizbowl #{0}] Submitted: {1}", moduleId, yourAnswer);
@@ -230,7 +230,7 @@ public class QuizbowlScript : MonoBehaviour
 
     void handleKey(char c)
     {
-        if (focused)
+        if (focused || autosolving)
         {
             Audio.PlayGameSoundAtTransform(KMSoundOverride.SoundEffect.TypewriterKey, transform);
             if (yourAnswer.Length != 100)
@@ -242,10 +242,6 @@ public class QuizbowlScript : MonoBehaviour
 
     void buttonPress()
     {
-        debug += 1;
-
-        Debug.LogFormat("Quizbowl #{0} Next Press: {1}. Hint: {2}", moduleId, debug, clues[currentClue]);
-
         if (nextTossup)
         {
             Submit = false;
@@ -342,7 +338,6 @@ public class QuizbowlScript : MonoBehaviour
     {
         connecting = true;
         toss = Rnd.Range(0, 200) * 2;
-        //toss = 156 * 2;//
         ans = toss + 1;
         selectedTossup = TossupList.phrases[toss];
         answer = TossupList.phrases[ans];
@@ -447,7 +442,7 @@ public class QuizbowlScript : MonoBehaviour
                 yield return "sendtochaterror This button cannot be pressed right now!";
                 yield break;
             }
-            Activate.OnInteract();
+            Next.OnInteract();
         }
         string[] parameters = command.Split(' ');
         if (Regex.IsMatch(parameters[0], @"^\s*submit\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
@@ -497,6 +492,7 @@ public class QuizbowlScript : MonoBehaviour
 
     IEnumerator TwitchHandleForcedSolve()
     {
+        autosolving = true;
         while (connecting) yield return true;
         if (activated)
         {
@@ -520,6 +516,7 @@ public class QuizbowlScript : MonoBehaviour
             yield return new WaitForSeconds(.1f);
         }
         handleEnter();
+        autosolving = false;
     }
 
 }
