@@ -314,6 +314,10 @@ public class QuizbowlScript : MonoBehaviour
                 spaceCount += 1;
                 lettered = true;
             }
+            if (currentClueDisplay[b].ToString() == "\n")
+            {
+                spaceCount = 0;
+            }
             if (spaceCount >= 6 && lettered == false)
             {
                 Hint.text = (Hint.text + "\n " + "");
@@ -372,7 +376,7 @@ public class QuizbowlScript : MonoBehaviour
         {
             selectedTossup = selectedTossup.Replace("“", "\"");
         }
-
+        
         string chari1 = "âáàäāçéèêḥíīïñóöșúū";
         string chari2 = "aaaaaceeehiiinoosuu";
         string[] chari3 = { "Ã³", "Ã­", "Ã¤", "Ã¶" };
