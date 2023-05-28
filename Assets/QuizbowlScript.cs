@@ -180,16 +180,19 @@ public class QuizbowlScript : MonoBehaviour
         {
             bool right = false;
             Debug.LogFormat("[Quizbowl #{0}] Submitted: {1}", moduleId, yourAnswer);
-            foreach (string obj in acceptableAnswers)
+
+            for (int i = 0; i < acceptableAnswers.Count; i++)
             {
-                if (yourAnswer.ToLower() == obj.ToLower())
+                if (!right)
                 {
-                    right = true;
-                    break;
-                }
-                else
-                {
-                    right = false;
+                    if (yourAnswer.ToUpper() == acceptableAnswers[i].ToUpper())
+                    {
+                        right = true;
+                    }
+                    else
+                    {
+                        right = false;
+                    }
                 }
             }
 
