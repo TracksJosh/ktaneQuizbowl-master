@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,11 +86,28 @@ public class QuizbowlScript : MonoBehaviour
     void EnterMode()
     {
         activated = false;
-
-        clues = selectedTossup.Split('.');
-
+        selectedTossup = selectedTossup.Replace('.', '÷');
+        string helperTossup = "";
+        for (int i = 0; i < selectedTossup.Length-1; i++) 
+        {
+            if (selectedTossup[i] == '÷' && Char.IsLower(selectedTossup[i + 2]))
+            {
+                helperTossup += @"÷";
+            }
+            else if (selectedTossup[i] == '÷' && selectedTossup[i + 1] == ' ')
+            {
+                helperTossup += @".";
+            }
+            else
+            {
+                helperTossup += selectedTossup[i];
+            }
+        }
+        helperTossup += @".";
+        clues = helperTossup.Split('.');
         for (int i = 0; i < clues.Length; i++)
         {
+            clues[i] = clues[i].Replace('÷', '.');
             clues[i] += @".";
             if (i < clues.Length - 1 && clues[i + 1].StartsWith("\""))
             {
@@ -97,7 +115,6 @@ public class QuizbowlScript : MonoBehaviour
                 clues[i + 1] = clues[i + 1].TrimStart('\"', ' ');
             }
         }
-
         currentClueDisplay = clues[0];
         StartCoroutine(TextingClue());
     }
@@ -345,6 +362,7 @@ public class QuizbowlScript : MonoBehaviour
     {
         connecting = true;
         toss = Rnd.Range(0, 200) * 2;
+        toss = 59 * 2;
         ans = toss + 1;
         selectedTossup = TossupList.phrases[toss];
         answer = TossupList.phrases[ans];
