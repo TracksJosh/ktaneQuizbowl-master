@@ -362,7 +362,6 @@ public class QuizbowlScript : MonoBehaviour
     {
         connecting = true;
         toss = Rnd.Range(0, 200) * 2;
-        toss = 59 * 2;
         ans = toss + 1;
         selectedTossup = TossupList.phrases[toss];
         answer = TossupList.phrases[ans];
