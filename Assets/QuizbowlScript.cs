@@ -90,9 +90,12 @@ public class QuizbowlScript : MonoBehaviour
         string helperTossup = "";
         for (int i = 0; i < selectedTossup.Length-1; i++) 
         {
-            if (selectedTossup[i] == '÷' && Char.IsLower(selectedTossup[i + 2]))
+            if (selectedTossup[i] == '÷' && i + 2 < selectedTossup.Length)
             {
-                helperTossup += @"÷";
+                if (Char.IsLower(selectedTossup[i + 2]))
+                {
+                    helperTossup += @"÷";
+                }
             }
             else if (selectedTossup[i] == '÷' && selectedTossup[i + 1] == ' ')
             {
