@@ -88,18 +88,27 @@ public class QuizbowlScript : MonoBehaviour
         activated = false;
         selectedTossup = selectedTossup.Replace('.', '÷');
         string helperTossup = "";
-        for (int i = 0; i < selectedTossup.Length-1; i++) 
+        for (int i = 0; i < selectedTossup.Length - 1; i++)
         {
-            if (selectedTossup[i] == '÷' && i + 2 < selectedTossup.Length)
+
+            if (selectedTossup[i] == '÷' && selectedTossup[i + 1] == ' ')
             {
-                if (Char.IsLower(selectedTossup[i + 2]))
+                if (i + 2 < selectedTossup.Length)
+                {
+                    if (Char.IsLower(selectedTossup[i + 2]))
+                    {
+                        helperTossup += @"÷";
+                    }
+                    else
+                    {
+                        helperTossup += @".";
+                    }
+
+                }
+                else
                 {
                     helperTossup += @"÷";
                 }
-            }
-            else if (selectedTossup[i] == '÷' && selectedTossup[i + 1] == ' ')
-            {
-                helperTossup += @".";
             }
             else
             {
