@@ -244,10 +244,17 @@ public class QuizbowlScript : MonoBehaviour
                 StartCoroutine(TextingAnswer());
                 if (currentClue >= clues.Length - 2)
                 {
-                    clues[0] = " ANSWERS:\n";
-                    for (int i = 0; i < acceptableAnswers.Count; i++)
+                    if (acceptableAnswers.Count <= 7) 
                     {
-                        clues[0] += acceptableAnswers[i] + "\n";
+                        clues[0] = " ANSWERS:\n";
+                        for (int i = 0; i < acceptableAnswers.Count; i++)
+                        {
+                            clues[0] += acceptableAnswers[i] + "\n";
+                        }
+                    }
+                    else
+                    {
+                        clues[0] = " There are too many answers to display. Refer to the logfile to see all acceptable answers.\n";
                     }
                     clues[0] += "Press Next to get Next Tossup.";
                     currentClueDisplay = clues[0];
