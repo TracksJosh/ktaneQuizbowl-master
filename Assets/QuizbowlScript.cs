@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
@@ -86,46 +87,17 @@ public class QuizbowlScript : MonoBehaviour
     void EnterMode()
     {
         activated = false;
-        selectedTossup = selectedTossup.Replace('.', '÷');
-        string helperTossup = "";
-        for (int i = 0; i < selectedTossup.Length - 1; i++)
-        {
-
-            if (selectedTossup[i] == '÷' && selectedTossup[i + 1] == ' ')
-            {
-                if (i + 2 < selectedTossup.Length)
-                {
-                    if (Char.IsLower(selectedTossup[i + 2]))
-                    {
-                        helperTossup += @"÷";
-                    }
-                    else
-                    {
-                        helperTossup += @".";
-                    }
-
-                }
-                else
-                {
-                    helperTossup += @"÷";
-                }
-            }
-            else
-            {
-                helperTossup += selectedTossup[i];
-            }
-        }
-        helperTossup += @".";
-        clues = helperTossup.Split('.');
+        clues = SplitIntoClues(selectedTossup);
         for (int i = 0; i < clues.Length; i++)
         {
-            clues[i] = clues[i].Replace('÷', '.');
-            clues[i] += @".";
             if (i < clues.Length - 1 && clues[i + 1].StartsWith("\""))
             {
                 clues[i] += "\"";
                 clues[i + 1] = clues[i + 1].TrimStart('\"', ' ');
             }
+        }
+        foreach (string s in clues) {
+            UnityEngine.Debug.LogFormat(s);
         }
         currentClueDisplay = clues[0];
         StartCoroutine(TextingClue());
@@ -208,7 +180,7 @@ public class QuizbowlScript : MonoBehaviour
         if (focused || autosolving)
         {
             bool right = false;
-            Debug.LogFormat("[Quizbowl #{0}] Submitted: {1}", moduleId, yourAnswer);
+            UnityEngine.Debug.LogFormat("[Quizbowl #{0}] Submitted: {1}", moduleId, yourAnswer);
 
             for (int i = 0; i < acceptableAnswers.Count; i++)
             {
@@ -365,7 +337,7 @@ public class QuizbowlScript : MonoBehaviour
 
             yield return new WaitForSecondsRealtime(0.03f);
         }
-        if ((Hint.text.Length >= currentClueDisplay.Length && currentClue < clues.Length - 2) || nextTossup)
+        if ((Hint.text.Length >= currentClueDisplay.Length && currentClue < clues.Length - 1) || nextTossup)
         {
             showNext = true;
         }
@@ -381,6 +353,7 @@ public class QuizbowlScript : MonoBehaviour
     {
         connecting = true;
         toss = Rnd.Range(0, 200) * 2;
+        //toss = 192;
         ans = toss + 1;
         selectedTossup = TossupList.phrases[toss];
         answer = TossupList.phrases[ans];
@@ -401,12 +374,7 @@ public class QuizbowlScript : MonoBehaviour
                 acceptableAnswers.Add(answer);
             }
 
-        }
-
-        if (selectedTossup.Contains("?"))
-        {
-            selectedTossup = selectedTossup.Replace("?", ".");
-        }
+        } 
         if (selectedTossup.Contains("”"))
         {
             selectedTossup = selectedTossup.Replace("”", "\"");
@@ -452,13 +420,47 @@ public class QuizbowlScript : MonoBehaviour
 
         yield return new WaitForSecondsRealtime(1.0f);
 
-        Debug.LogFormat("[Quizbowl #{0}] Tossup: {1}", moduleId, selectedTossup);
-        Debug.LogFormat("[Quizbowl #{0}] Acceptable Answers: {1}, Answers are as follows:", moduleId, acceptableAnswers.Count);
+        UnityEngine.Debug.LogFormat("[Quizbowl #{0}] Tossup: {1}", moduleId, selectedTossup);
+        UnityEngine.Debug.LogFormat("[Quizbowl #{0}] Acceptable Answers: {1}, Answers are as follows:", moduleId, acceptableAnswers.Count);
         foreach (string obj in acceptableAnswers)
-            Debug.LogFormat("[Quizbowl #{0}] {1}", moduleId, obj);
+            UnityEngine.Debug.LogFormat("[Quizbowl #{0}] {1}", moduleId, obj);
         connecting = false;
         activated = true;
         Hint.text = "Connected";
+    }
+
+    private string[] SplitIntoClues(string text)
+    {
+        if (text == null || text.Trim().Length == 0)
+            return new string[0];
+
+        text = text.Replace("“", "\"")
+                   .Replace("”", "\"")
+                   .Trim();
+
+        text = Regex.Replace(text, @"\.{2,}", ".");
+        text = Regex.Replace(text, @"\.\s*\n", ". ");
+        text = Regex.Replace(text, @"\s+\.", ".");
+
+        text = text.Replace("Mrs.", "Mrs§")
+                   .Replace("Mr.", "Mr§")
+                   .Replace("Ms.", "Ms§")
+                   .Replace("Dr.", "Dr§")
+                   .Replace("St.", "St§");
+
+        string[] sentences = Regex.Split(
+            text,
+            @"(?<=[.!?][""]?)\s+(?=[A-Z])"
+        );
+
+        for (int i = 0; i < sentences.Length; i++)
+        {
+            sentences[i] = sentences[i]
+                .Replace("§", ".")
+                .Trim();
+        }
+
+        return sentences;
     }
 
     //twitch plays
